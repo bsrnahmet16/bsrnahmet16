@@ -32,7 +32,7 @@ def cylinder(name,loc,radius,depth,mat):
 world=bpy.data.worlds.new('Meadow World');scene.world=world;world.use_nodes=True
 nodes=world.node_tree.nodes;links=world.node_tree.links;nodes.clear()
 out=nodes.new('ShaderNodeOutputWorld');bg=nodes.new('ShaderNodeBackground');env=nodes.new('ShaderNodeTexEnvironment')
-env.image=bpy.data.images.load('assets/meadow_4k.exr');bg.inputs['Strength'].default_value=.30
+env.image=bpy.data.images.load('assets/meadow_2k.hdr');bg.inputs['Strength'].default_value=.42
 links.new(env.outputs['Color'],bg.inputs['Color']);links.new(bg.outputs['Background'],out.inputs['Surface'])
 
 grass=material('Grass',(0.075,.22,.085),.92); asphalt=material('Asphalt',(.045,.055,.065),.88)
@@ -81,22 +81,22 @@ def import_rig(path,name,height,loc):
     if not any(m.type=='CYCLES' for m in fc.modifiers):fc.modifiers.new(type='CYCLES')
  return root
 
-pofi=import_rig('assets/Pofi_3D_rigged.glb','Pofi',3.65,(-3.8,-.15,.08));pofi.rotation_euler[2]=math.radians(-7)
+pofi=import_rig('assets/Pofi_3D_rigged.glb','Pofi',3.55,(-3.25,-.05,.08));pofi.rotation_euler[2]=math.radians(-5)
 
 # Authored CC0 vehicle mesh and materials.
-before=set(bpy.data.objects);bpy.ops.import_scene.gltf(filepath='assets/sedan.glb');carobjs=[o for o in bpy.data.objects if o not in before]
+before=set(bpy.data.objects);bpy.ops.import_scene.gltf(filepath='assets/ToyCar.glb');carobjs=[o for o in bpy.data.objects if o not in before]
 car=bpy.data.objects.new('CAR_ROOT',None);bpy.context.collection.objects.link(car)
 for o in carobjs:
  if o.parent is None:o.parent=car
-mnx,mxx,mny,mxy,mnz,mxz=bbox(carobjs);sc=3.7/max(mxx-mnx,.001)
-car.scale=(sc,sc,sc);car.location=(1.9-(mnx+mxx)*.5*sc,.80-(mny+mxy)*.5*sc,.05-mnz*sc);car.rotation_euler[2]=math.radians(6)
-car.keyframe_insert('location',frame=1);car.location.x=2.25;car.keyframe_insert('location',frame=150)
+mnx,mxx,mny,mxy,mnz,mxz=bbox(carobjs);sc=3.15/max(mxx-mnx,.001)
+car.scale=(sc,sc,sc);car.location=(2.0-(mnx+mxx)*.5*sc,.80-(mny+mxy)*.5*sc,.05-mnz*sc);car.rotation_euler[2]=math.radians(4)
+car.keyframe_insert('location',frame=1);car.location.x=2.18;car.keyframe_insert('location',frame=150)
 
 def add_text(body,loc,size,color,extrude,bevel):
  bpy.ops.object.text_add(location=loc,rotation=(math.radians(90),0,0));o=bpy.context.object
  o.data.body=body;o.data.align_x='CENTER';o.data.align_y='CENTER';o.data.size=size;o.data.extrude=extrude;o.data.bevel_depth=bevel;o.data.bevel_resolution=5;o.data.materials.append(color);return o
 outline=material('Letter deep blue',(.015,.07,.16),.35); face=material('Letter warm cream',(.98,.70,.08),.30)
-back=add_text('A   a',(0,3.10,4.42),1.68,outline,.115,.055);front=add_text('A   a',(0,3.02,4.42),1.55,face,.075,.035)
+back=add_text('A   a',(0,3.10,3.98),1.52,outline,.115,.055);front=add_text('A   a',(0,3.02,3.98),1.39,face,.075,.035)
 for o in (back,front):
  o.scale=(0,0,0);o.keyframe_insert('scale',frame=1);o.keyframe_insert('scale',frame=24)
  o.scale=(1,1,1);o.keyframe_insert('scale',frame=33);o.keyframe_insert('scale',frame=126)
@@ -105,9 +105,9 @@ for o in (back,front):
   for kp in fc.keyframe_points:kp.interpolation='BEZIER'
 
 bpy.ops.object.empty_add(location=(0,1.1,1.65));focus=bpy.context.object
-bpy.ops.object.camera_add(location=(0,-13.2,3.45));cam=bpy.context.object;cam.data.lens=53;look(cam,(0,1.1,1.75));scene.camera=cam
+bpy.ops.object.camera_add(location=(0,-14.4,3.70));cam=bpy.context.object;cam.data.lens=50;look(cam,(0,1.1,1.75));scene.camera=cam
 cam.data.dof.use_dof=True;cam.data.dof.focus_object=focus;cam.data.dof.aperture_fstop=7.0
-cam.keyframe_insert('location',frame=1);cam.location=(.28,-12.75,3.32);cam.keyframe_insert('location',frame=150)
+cam.keyframe_insert('location',frame=1);cam.location=(.10,-14.1,3.62);cam.keyframe_insert('location',frame=150)
 for fc in cam.animation_data.action.fcurves:
  for kp in fc.keyframe_points:kp.interpolation='BEZIER'
 for loc,energy,color,size in [((-5,-4,9),950,(1.0,.82,.64),6),((6,-2,6),650,(.62,.76,1.0),5),((0,7,8),800,(1.0,.65,.44),4)]:
