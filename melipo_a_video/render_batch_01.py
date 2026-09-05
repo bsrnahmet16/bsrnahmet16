@@ -9,7 +9,7 @@ scene=bpy.context.scene
 scene.frame_start=1; scene.frame_end=FRAMES; scene.render.fps=30
 scene.render.engine='BLENDER_EEVEE'; scene.eevee.taa_render_samples=16
 scene.eevee.use_gtao=True; scene.eevee.gtao_distance=3; scene.eevee.gtao_factor=1.25
-scene.render.resolution_x=1280; scene.render.resolution_y=720; scene.render.resolution_percentage=100
+scene.render.resolution_x=1920; scene.render.resolution_y=1080; scene.render.resolution_percentage=100
 scene.render.image_settings.file_format='PNG'; scene.render.filepath=f'frames/scene_{SCENE:02d}_'
 scene.view_settings.look='AgX - Medium High Contrast'; scene.view_settings.exposure=-0.65
 
@@ -91,8 +91,15 @@ def import_rig(path,name,height,loc):
     if not any(m.type=='CYCLES' for m in fc.modifiers):fc.modifiers.new(type='CYCLES')
  return root
 
-pofi_loc={1:(-.80,-.05,-.46),2:(-3.25,-.05,-.46),3:(-3.25,-.05,-.46)}[SCENE]
-pofi=import_rig('assets/Pofi_3D_rigged.glb','Pofi',3.55,pofi_loc);pofi.rotation_euler[2]=math.radians(-5)
+pofi_loc={1:(-1.45,-.05,-.46),2:(-3.05,-.05,-.46),3:(-3.05,-.05,-.46)}[SCENE]
+pofi=import_rig('assets/Pofi_3D_rigged.glb','Pofi',4.45,pofi_loc);pofi.rotation_euler[2]=math.radians(-5)
+pofi.keyframe_insert('location',frame=1)
+pofi.location.x += .22
+pofi.keyframe_insert('location',frame=max(2,FRAMES//2))
+pofi.location.x -= .10
+pofi.keyframe_insert('location',frame=FRAMES)
+for fc in pofi.animation_data.action.fcurves:
+ for kp in fc.keyframe_points: kp.interpolation='BEZIER'
 
 # Original rounded 3D children's car: separate glossy body, glass, lights and wheels.
 car=bpy.data.objects.new('CAR_ROOT',None);bpy.context.collection.objects.link(car)
@@ -127,7 +134,7 @@ def add_text(body,loc,size,color,extrude,bevel):
  bpy.ops.object.text_add(location=loc,rotation=(math.radians(90),0,0));o=bpy.context.object
  o.data.body=body;o.data.align_x='CENTER';o.data.align_y='CENTER';o.data.size=size;o.data.extrude=extrude;o.data.bevel_depth=bevel;o.data.bevel_resolution=5;o.data.materials.append(color);return o
 outline=material('Letter deep blue',(.015,.07,.16),.35); face=material('Letter warm cream',(.98,.70,.08),.30)
-back=add_text('A   a',(0,3.10,3.98),1.52,outline,.115,.055);front=add_text('A   a',(0,3.02,3.98),1.39,face,.075,.035)
+back=add_text('A   a',(0,3.10,3.82),2.25,outline,.135,.065);front=add_text('A   a',(0,3.02,3.82),2.08,face,.088,.042)
 for o in (back,front):
  if SCENE==1:
   o.scale=(0,0,0);o.keyframe_insert('scale',frame=1);o.keyframe_insert('scale',frame=FRAMES)
