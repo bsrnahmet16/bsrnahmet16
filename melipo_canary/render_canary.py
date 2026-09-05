@@ -143,7 +143,7 @@ for fc in camera.animation_data.action.fcurves:
     for kp in fc.keyframe_points:
         kp.interpolation = "BEZIER"
 
-scene.view_settings.look = "Medium High Contrast"
+scene.view_settings.look = "AgX - Medium High Contrast"
 scene.render.film_transparent = False
 bpy.ops.wm.save_as_mainfile(filepath="melipo_canary.blend")
 bpy.ops.render.render(animation=True)
