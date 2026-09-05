@@ -59,6 +59,7 @@ jobs:
           sid=$(printf '%02d' ${{ matrix.scene }})
           ffmpeg -y -framerate 30 -i frames/scene_${sid}_%04d.png -ss ${{ matrix.start }} -t ${{ matrix.duration }} -i a_song_vocals.mp3 -c:v libx264 -preset medium -crf 17 -pix_fmt yuv420p -c:a aac -b:a 192k -shortest -movflags +faststart a_scene_${sid}.mp4
           ffprobe -v error -show_entries format=duration -show_entries stream=width,height,r_frame_rate -of json a_scene_${sid}.mp4
+          ffmpeg -y -loglevel error -i a_scene_${sid}.mp4 -vf "fps=3,scale=480:-1,tile=5x4" -frames:v 1 a_scene_${sid}_contact.jpg
       - name: Upload scene review package
         uses: actions/upload-artifact@v4
         with:
@@ -66,5 +67,5 @@ jobs:
           path: |
             melipo_a_video/a_scene_*.mp4
             melipo_a_video/a_scene_*.blend
-            melipo_a_video/frames/*.png
+            melipo_a_video/a_scene_*_contact.jpg
           retention-days: 5
