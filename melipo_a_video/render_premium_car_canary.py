@@ -89,7 +89,7 @@ def import_rig(path,name,height,loc):
     if not any(m.type=='CYCLES' for m in fc.modifiers):fc.modifiers.new(type='CYCLES')
  return root
 
-pofi=import_rig('assets/Pofi_3D_rigged.glb','Pofi',3.55,(-3.25,-.05,-.30));pofi.rotation_euler[2]=math.radians(-5)
+pofi=import_rig('assets/Pofi_3D_rigged.glb','Pofi',3.55,(-3.25,-.05,-.46));pofi.rotation_euler[2]=math.radians(-5)
 
 # Original rounded 3D children's car: separate glossy body, glass, lights and wheels.
 car=bpy.data.objects.new('CAR_ROOT',None);bpy.context.collection.objects.link(car)
@@ -159,9 +159,9 @@ sb.inputs['Base Color'].default_value=(.012,.016,.020,1)
 sb.inputs['Roughness'].default_value=1.0
 sb.inputs['Alpha'].default_value=.28
 shadow_mat.blend_method='BLEND'; shadow_mat.use_screen_refraction=True
-bpy.ops.mesh.primitive_uv_sphere_add(segments=64,ring_count=16,location=(-3.25,-.02,.075))
+bpy.ops.mesh.primitive_circle_add(vertices=64,radius=1.0,fill_type='NGON',location=(-3.25,.02,-.43),rotation=(math.radians(90),0,0))
 contact=bpy.context.object; contact.name='Pofi soft contact shadow'
-contact.scale=(.72,.34,.025); contact.data.materials.append(shadow_mat)
+contact.scale=(.66,.15,1); contact.data.materials.append(shadow_mat)
 scene.render.film_transparent=True
 # Pixel-exact compositor background: fills the complete 1280x720 frame without
 # perspective distortion, mirroring or uncovered black borders.
