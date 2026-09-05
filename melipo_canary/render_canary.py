@@ -19,6 +19,7 @@ scene.frame_start = 1
 scene.frame_end = 300
 scene.render.fps = 30
 scene.render.engine = "BLENDER_EEVEE"
+scene.eevee.taa_render_samples = 8
 scene.eevee.use_gtao = True
 scene.eevee.gtao_distance = 3
 scene.eevee.gtao_factor = 1.25
