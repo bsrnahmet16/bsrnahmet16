@@ -28,7 +28,7 @@ scene.render.resolution_y = 720
 scene.render.resolution_percentage = 100
 scene.render.image_settings.file_format = "PNG"
 scene.render.filepath = "frames/frame_"
-scene.world.color = (0.025, 0.055, 0.11)
+scene.world.color = (0.035, 0.060, 0.085)
 
 def look_at(obj, point):
     obj.rotation_euler = (Vector(point) - obj.location).to_track_quat("-Z", "Y").to_euler()
@@ -50,34 +50,34 @@ ground.data.materials.append(add_material("Ground", (0.07, 0.16, 0.25), 0.82))
 # Soft backdrop
 bpy.ops.mesh.primitive_plane_add(size=35, location=(0, 5.5, 8), rotation=(math.radians(90), 0, 0))
 back = bpy.context.object
-back.data.materials.append(add_material("Backdrop", (0.04, 0.13, 0.24), 0.9))
+back.data.materials.append(add_material("Backdrop", (0.055, 0.105, 0.155), 0.92))
 
 # Camera
-bpy.ops.object.camera_add(location=(0, -18.5, 4.2))
+bpy.ops.object.camera_add(location=(0, -15.8, 4.0))
 camera = bpy.context.object
-camera.data.lens = 52
+camera.data.lens = 50
 look_at(camera, (0, 0, 2.15))
 scene.camera = camera
 
 # Lighting
 bpy.ops.object.light_add(type="AREA", location=(-5, -7, 9))
 key = bpy.context.object
-key.data.energy = 1250
+key.data.energy = 875
 key.data.shape = "DISK"
 key.data.size = 7
 look_at(key, (0, 0, 2))
 
 bpy.ops.object.light_add(type="AREA", location=(6, -3, 6))
 fill = bpy.context.object
-fill.data.energy = 850
-fill.data.color = (0.42, 0.68, 1.0)
+fill.data.energy = 600
+fill.data.color = (0.62, 0.76, 0.92)
 fill.data.size = 6
 look_at(fill, (0, 0, 2))
 
 bpy.ops.object.light_add(type="AREA", location=(0, 4, 8))
 rim = bpy.context.object
-rim.data.energy = 1100
-rim.data.color = (1.0, 0.55, 0.25)
+rim.data.energy = 650
+rim.data.color = (1.0, 0.72, 0.52)
 rim.data.size = 5
 look_at(rim, (0, 0, 2.5))
 
@@ -134,17 +134,25 @@ for index, (label, filepath, target_x) in enumerate(FILES):
             except TypeError:
                 pass
 
+# Reduce glossy/plastic highlights while preserving original texture colors.
+for mat in bpy.data.materials:
+    if mat.use_nodes:
+        bsdf = mat.node_tree.nodes.get("Principled BSDF")
+        if bsdf:
+            bsdf.inputs["Roughness"].default_value = max(bsdf.inputs["Roughness"].default_value, 0.68)
+
 # Gentle camera breathing, not a pan/zoom-only fake motion.
 camera.keyframe_insert(data_path="location", frame=1)
-camera.location.y = -18.15
+camera.location.y = -15.5
 camera.keyframe_insert(data_path="location", frame=150)
-camera.location.y = -18.5
+camera.location.y = -15.8
 camera.keyframe_insert(data_path="location", frame=300)
 for fc in camera.animation_data.action.fcurves:
     for kp in fc.keyframe_points:
         kp.interpolation = "BEZIER"
 
-scene.view_settings.look = "AgX - Medium High Contrast"
+scene.view_settings.look = "AgX - Base Contrast"
+scene.view_settings.exposure = -0.30
 scene.render.film_transparent = False
 bpy.ops.wm.save_as_mainfile(filepath="melipo_canary.blend")
 bpy.ops.render.render(animation=True)
