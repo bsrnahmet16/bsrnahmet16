@@ -24,7 +24,9 @@ def cube(name,loc,scale,mat,bevel=.05):
   m=o.modifiers.new('Soft edges','BEVEL');m.width=bevel;m.segments=3
  o.data.materials.append(mat); return o
 def sphere(name,loc,scale,mat):
- bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=3,location=loc);o=bpy.context.object;o.name=name;o.scale=scale;o.data.materials.append(mat);return o
+ bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=4,location=loc);o=bpy.context.object;o.name=name;o.scale=scale;o.data.materials.append(mat)
+ for p in o.data.polygons:p.use_smooth=True
+ return o
 def cylinder(name,loc,radius,depth,mat):
  bpy.ops.mesh.primitive_cylinder_add(vertices=32,radius=radius,depth=depth,location=loc);o=bpy.context.object;o.name=name;o.data.materials.append(mat);return o
 
@@ -32,14 +34,15 @@ def cylinder(name,loc,radius,depth,mat):
 world=bpy.data.worlds.new('Meadow World');scene.world=world;world.use_nodes=True
 nodes=world.node_tree.nodes;links=world.node_tree.links;nodes.clear()
 out=nodes.new('ShaderNodeOutputWorld');bg=nodes.new('ShaderNodeBackground');sky=nodes.new('ShaderNodeTexSky')
-sky.sky_type='NISHITA';sky.sun_elevation=math.radians(24);sky.sun_rotation=math.radians(135);sky.altitude=.25;sky.air_density=1.05;sky.dust_density=1.8
-bg.inputs['Strength'].default_value=.32
+sky.sky_type='NISHITA';sky.sun_elevation=math.radians(42);sky.sun_rotation=math.radians(135);sky.altitude=.15;sky.air_density=.72;sky.dust_density=.65;sky.ozone_density=.85
+bg.inputs['Strength'].default_value=.50
 links.new(sky.outputs['Color'],bg.inputs['Color']);links.new(bg.outputs['Background'],out.inputs['Surface'])
 
 grass=material('Grass',(0.075,.22,.085),.92); asphalt=material('Asphalt',(.045,.055,.065),.88)
 cream=material('Road markings',(.93,.82,.50),.62); stone=material('Kerb',(.35,.37,.36),.82)
 trunk=material('Bark',(.20,.075,.025),.92); leaf1=material('Leaves deep',(.045,.20,.07),.82);leaf2=material('Leaves warm',(.11,.31,.085),.8)
 pink=material('Flowers',(.62,.16,.34),.58); white=material('White flowers',(.88,.82,.66),.7)
+hill1=material('Distant hills',(.08,.30,.18),.9);hill2=material('Sunlit hills',(.18,.42,.20),.88);cloud=material('Soft clouds',(.92,.96,1.0),.72)
 
 ground=cube('Textured meadow',(0,3,-.20),(15,13,.20),grass,.08)
 ground.data.materials.clear()
@@ -59,6 +62,10 @@ for x,y,s in [(-8,6,1.15),(-5,8,.85),(6,7,1.0),(9,5,.9)]:
 for i,x in enumerate([-10,-8,-6,5.5,7.2,9.2,11]):
  y=4.3+(i%2)*1.1;sphere('Shrub',(x,y,.55),(.65,.52,.55),leaf1 if i%2 else leaf2)
  for j in range(3): sphere('Flower',(x-.32+j*.30,y-.35,.72+j*.08),(.10,.10,.10),pink if (i+j)%2 else white)
+# Midground depth: layered hills and softly modelled clouds.
+for x,z,s,ma in [(-8,.35,3.8,hill1),(-3,.15,3.2,hill2),(3,.28,4.0,hill1),(9,.10,3.4,hill2)]: sphere('Hill',(x,10,z),(s,1.4,s*.55),ma)
+for x,z,s in [(-6,5.7,1.0),(1,6.2,.85),(7,5.5,1.15)]:
+ for dx,dz,ss in [(-.8,0,.72),(0,.18,1.0),(.85,-.03,.66)]: sphere('Cloud',(x+dx*s,9.4,z+dz*s),(1.25*ss*s,.30,.62*ss*s),cloud)
 
 def bbox(objs):
  pts=[]
@@ -98,6 +105,13 @@ hood=uvpart('Rounded hood',(2.92,.48,.94),(1.05,.82,.36),blue)
 cab=uvpart('Cabin',(1.52,.82,1.32),(1.20,.76,.64),blue)
 wind=uvpart('Front windscreen',(2.19,.12,1.46),(.70,.035,.40),glass)
 rearwind=uvpart('Rear windscreen',(.86,.30,1.44),(.42,.035,.34),glass)
+# Camera-facing side windows and door details make the vehicle immediately legible.
+side_front=uvpart('Side front window',(1.94,-.055,1.43),(.48,.035,.36),glass)
+side_rear=uvpart('Side rear window',(1.05,-.055,1.43),(.37,.035,.34),glass)
+cube('Front door inset',(2.05,-.195,.91),(.58,.025,.40),blue,.12).parent=car
+cube('Rear door inset',(1.02,-.195,.91),(.40,.025,.38),blue,.12).parent=car
+cube('Front handle',(2.26,-.235,1.04),(.12,.025,.035),chrome,.025).parent=car
+cube('Rear handle',(1.15,-.235,1.04),(.10,.025,.035),chrome,.025).parent=car
 for x in (1.0,2.95):
  for y in (-.02,1.47):
   bpy.ops.mesh.primitive_torus_add(major_radius=.38,minor_radius=.14,major_segments=40,minor_segments=12,location=(x,y,.48),rotation=(math.radians(90),0,0));w=bpy.context.object;w.name='Tyre';w.data.materials.append(rubber);w.parent=car
