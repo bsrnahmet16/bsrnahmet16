@@ -28,12 +28,13 @@ def sphere(name,loc,scale,mat):
 def cylinder(name,loc,radius,depth,mat):
  bpy.ops.mesh.primitive_cylinder_add(vertices=32,radius=radius,depth=depth,location=loc);o=bpy.context.object;o.name=name;o.data.materials.append(mat);return o
 
-# Photographic meadow light/background.
+# Stable physical daylight sky (no external-texture fallback colour).
 world=bpy.data.worlds.new('Meadow World');scene.world=world;world.use_nodes=True
 nodes=world.node_tree.nodes;links=world.node_tree.links;nodes.clear()
-out=nodes.new('ShaderNodeOutputWorld');bg=nodes.new('ShaderNodeBackground');env=nodes.new('ShaderNodeTexEnvironment')
-env.image=bpy.data.images.load('assets/meadow_2k.hdr');bg.inputs['Strength'].default_value=.42
-links.new(env.outputs['Color'],bg.inputs['Color']);links.new(bg.outputs['Background'],out.inputs['Surface'])
+out=nodes.new('ShaderNodeOutputWorld');bg=nodes.new('ShaderNodeBackground');sky=nodes.new('ShaderNodeTexSky')
+sky.sky_type='NISHITA';sky.sun_elevation=math.radians(24);sky.sun_rotation=math.radians(135);sky.altitude=.25;sky.air_density=1.05;sky.dust_density=1.8
+bg.inputs['Strength'].default_value=.32
+links.new(sky.outputs['Color'],bg.inputs['Color']);links.new(bg.outputs['Background'],out.inputs['Surface'])
 
 grass=material('Grass',(0.075,.22,.085),.92); asphalt=material('Asphalt',(.045,.055,.065),.88)
 cream=material('Road markings',(.93,.82,.50),.62); stone=material('Kerb',(.35,.37,.36),.82)
@@ -83,14 +84,27 @@ def import_rig(path,name,height,loc):
 
 pofi=import_rig('assets/Pofi_3D_rigged.glb','Pofi',3.55,(-3.25,-.05,.08));pofi.rotation_euler[2]=math.radians(-5)
 
-# Authored CC0 vehicle mesh and materials.
-before=set(bpy.data.objects);bpy.ops.import_scene.gltf(filepath='assets/ToyCar.glb');carobjs=[o for o in bpy.data.objects if o not in before]
+# Original rounded 3D children's car: separate glossy body, glass, lights and wheels.
 car=bpy.data.objects.new('CAR_ROOT',None);bpy.context.collection.objects.link(car)
-for o in carobjs:
- if o.parent is None:o.parent=car
-mnx,mxx,mny,mxy,mnz,mxz=bbox(carobjs);sc=3.15/max(mxx-mnx,.001)
-car.scale=(sc,sc,sc);car.location=(2.0-(mnx+mxx)*.5*sc,.80-(mny+mxy)*.5*sc,.05-mnz*sc);car.rotation_euler[2]=math.radians(4)
-car.keyframe_insert('location',frame=1);car.location.x=2.18;car.keyframe_insert('location',frame=150)
+blue=material('Car pearl blue',(.025,.24,.62),.20,.18);blue.node_tree.nodes['Principled BSDF'].inputs['Coat Weight'].default_value=.55
+glass=material('Windows',(.025,.12,.22),.10,.15);rubber=material('Tyres',(.012,.015,.018),.86);chrome=material('Chrome',(.48,.53,.58),.18,.88)
+lamp=material('Warm headlights',(1.0,.72,.22),.18);red=material('Rear lamps',(.72,.025,.018),.25)
+def uvpart(name,loc,scale,ma,parent=car):
+ bpy.ops.mesh.primitive_uv_sphere_add(segments=48,ring_count=24,location=loc);o=bpy.context.object;o.name=name;o.scale=scale;bpy.ops.object.transform_apply(location=False,rotation=False,scale=True);o.data.materials.append(ma);o.parent=parent
+ for p in o.data.polygons:p.use_smooth=True
+ return o
+body=uvpart('Rounded car body',(2.0,.72,.72),(2.15,.92,.57),blue)
+hood=uvpart('Rounded hood',(2.92,.48,.94),(1.05,.82,.36),blue)
+cab=uvpart('Cabin',(1.52,.82,1.32),(1.20,.76,.64),blue)
+wind=uvpart('Front windscreen',(2.19,.12,1.46),(.70,.035,.40),glass)
+rearwind=uvpart('Rear windscreen',(.86,.30,1.44),(.42,.035,.34),glass)
+for x in (1.0,2.95):
+ for y in (-.02,1.47):
+  bpy.ops.mesh.primitive_torus_add(major_radius=.38,minor_radius=.14,major_segments=40,minor_segments=12,location=(x,y,.48),rotation=(math.radians(90),0,0));w=bpy.context.object;w.name='Tyre';w.data.materials.append(rubber);w.parent=car
+  cylinder('Hub',(x,y,.48),.19,.10,chrome).rotation_euler[0]=math.radians(90);bpy.context.object.parent=car
+for y in (.17,1.27): uvpart('Headlight',(3.82,y,.86),(.12,.15,.15),lamp)
+cube('Front bumper',(3.78,.72,.54),(.11,.76,.09),chrome,.08).parent=car
+car.rotation_euler[2]=math.radians(-2);car.keyframe_insert('location',frame=1);car.location.x=.20;car.keyframe_insert('location',frame=150)
 
 def add_text(body,loc,size,color,extrude,bevel):
  bpy.ops.object.text_add(location=loc,rotation=(math.radians(90),0,0));o=bpy.context.object
