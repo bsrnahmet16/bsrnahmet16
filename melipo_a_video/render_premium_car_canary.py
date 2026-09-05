@@ -156,6 +156,8 @@ scene.render.film_transparent=False
 # image nodes on GitHub's Blender package.
 bpy.ops.mesh.primitive_plane_add(size=2,location=(0,7.5,3.15),rotation=(math.radians(90),0,0))
 plate=bpy.context.object;plate.name='Premium environment plate';plate.scale=(9.05,5.09,1)
+# Face the plate directly toward the camera so it fills the 16:9 frame without a black strip.
+look(plate,cam.location)
 pm=bpy.data.materials.new('Premium plate material');pm.use_nodes=True
 pn=pm.node_tree.nodes;pl=pm.node_tree.links;pn.clear()
 pout=pn.new('ShaderNodeOutputMaterial');emit=pn.new('ShaderNodeEmission');tex=pn.new('ShaderNodeTexImage')
