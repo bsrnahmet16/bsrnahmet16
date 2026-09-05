@@ -141,5 +141,23 @@ for fc in cam.animation_data.action.fcurves:
 for loc,energy,color,size in [((-5,-4,9),950,(1.0,.82,.64),6),((6,-2,6),650,(.62,.76,1.0),5),((0,7,8),800,(1.0,.65,.44),4)]:
  bpy.ops.object.light_add(type='AREA',location=loc);light=bpy.context.object;light.data.energy=energy;light.data.color=color;light.data.size=size;look(light,(0,1,1.6))
 
+# Hybrid premium plate: retain the canonical animated GLB character and exact
+# Blender typography, while replacing the rejected procedural scenery/car.
+def is_under(obj,root):
+ p=obj
+ while p:
+  if p==root:return True
+  p=p.parent
+ return False
+for obj in bpy.data.objects:
+ if obj.type=='MESH' and not is_under(obj,pofi): obj.hide_render=True
+scene.render.film_transparent=True
+scene.use_nodes=True
+cn=scene.node_tree.nodes;cl=scene.node_tree.links;cn.clear()
+rl=cn.new('CompositorNodeRLayers');plate=cn.new('CompositorNodeImage');plate.image=bpy.data.images.load('assets/premium_car_background_v1.png');plate.image.pack()
+scale=cn.new('CompositorNodeScale');scale.space='RENDER_SIZE';alpha=cn.new('CompositorNodeAlphaOver');comp=cn.new('CompositorNodeComposite')
+alpha.inputs[0].default_value=1.0
+cl.new(plate.outputs['Image'],scale.inputs['Image']);cl.new(scale.outputs['Image'],alpha.inputs[1]);cl.new(rl.outputs['Image'],alpha.inputs[2]);cl.new(alpha.outputs['Image'],comp.inputs['Image'])
+
 bpy.ops.wm.save_as_mainfile(filepath='a_premium_car_canary.blend')
 bpy.ops.render.render(animation=True)
