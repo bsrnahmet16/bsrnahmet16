@@ -89,7 +89,7 @@ def import_rig(path,name,height,loc):
     if not any(m.type=='CYCLES' for m in fc.modifiers):fc.modifiers.new(type='CYCLES')
  return root
 
-pofi=import_rig('assets/Pofi_3D_rigged.glb','Pofi',3.55,(-3.25,-.05,.08));pofi.rotation_euler[2]=math.radians(-5)
+pofi=import_rig('assets/Pofi_3D_rigged.glb','Pofi',3.55,(-3.25,-.05,-.30));pofi.rotation_euler[2]=math.radians(-5)
 
 # Original rounded 3D children's car: separate glossy body, glass, lights and wheels.
 car=bpy.data.objects.new('CAR_ROOT',None);bpy.context.collection.objects.link(car)
