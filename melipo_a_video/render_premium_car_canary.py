@@ -151,18 +151,21 @@ def is_under(obj,root):
  return False
 for obj in bpy.data.objects:
  if obj.type=='MESH' and not is_under(obj,pofi): obj.hide_render=True
-scene.render.film_transparent=False
-# A camera-facing physical plate is more deterministic than headless compositor
-# image nodes on GitHub's Blender package.
-bpy.ops.mesh.primitive_plane_add(size=2,location=(0,7.5,3.15),rotation=(math.radians(90),0,0))
-plate=bpy.context.object;plate.name='Premium environment plate';plate.scale=(9.05,5.09,1)
-# Face the plate directly toward the camera so it fills the 16:9 frame without a black strip.
-look(plate,cam.location)
-pm=bpy.data.materials.new('Premium plate material');pm.use_nodes=True
-pn=pm.node_tree.nodes;pl=pm.node_tree.links;pn.clear()
-pout=pn.new('ShaderNodeOutputMaterial');emit=pn.new('ShaderNodeEmission');tex=pn.new('ShaderNodeTexImage')
-tex.image=bpy.data.images.load('assets/premium_car_background_v1.png');tex.image.pack();emit.inputs['Strength'].default_value=.82
-pl.new(tex.outputs['Color'],emit.inputs['Color']);pl.new(emit.outputs['Emission'],pout.inputs['Surface']);plate.data.materials.append(pm)
+scene.render.film_transparent=True
+# Pixel-exact compositor background: fills the complete 1280x720 frame without
+# perspective distortion, mirroring or uncovered black borders.
+scene.use_nodes=True
+cn=scene.node_tree.nodes; cl=scene.node_tree.links; cn.clear()
+rl=cn.new('CompositorNodeRLayers')
+bgimg=cn.new('CompositorNodeImage')
+bgimg.image=bpy.data.images.load('assets/premium_car_background_v1.png')
+scale=cn.new('CompositorNodeScale'); scale.space='RENDER_SIZE'; scale.frame_method='CROP'
+over=cn.new('CompositorNodeAlphaOver'); over.inputs[0].default_value=1.0
+comp=cn.new('CompositorNodeComposite')
+cl.new(bgimg.outputs['Image'],scale.inputs['Image'])
+cl.new(scale.outputs['Image'],over.inputs[1])
+cl.new(rl.outputs['Image'],over.inputs[2])
+cl.new(over.outputs['Image'],comp.inputs['Image'])
 
 bpy.ops.wm.save_as_mainfile(filepath='a_premium_car_canary.blend')
 bpy.ops.render.render(animation=True)
