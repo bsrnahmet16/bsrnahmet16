@@ -1,0 +1,51 @@
+name: Melipo 3D Canary
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/melipo-canary.yml"
+      - "melipo_canary/**"
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Blender and FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender ffmpeg
+
+      - name: Download approved public rigged characters
+        run: |
+          mkdir -p melipo_canary/assets melipo_canary/frames
+          curl --fail --location --retry 5 -o melipo_canary/assets/Melipo_3D_rigged.glb https://d1ojnqroiei5k7.cloudfront.net/melipo/characters/v1/Melipo_3D_rigged.glb
+          curl --fail --location --retry 5 -o melipo_canary/assets/Pofi_3D_rigged.glb https://d1ojnqroiei5k7.cloudfront.net/melipo/characters/v1/Pofi_3D_rigged.glb
+          curl --fail --location --retry 5 -o melipo_canary/assets/Zipzi_3D_rigged.glb https://d1ojnqroiei5k7.cloudfront.net/melipo/characters/v1/Zipzi_3D_rigged.glb
+          curl --fail --location --retry 5 -o melipo_canary/assets/Luma_3D_rigged.glb https://d1ojnqroiei5k7.cloudfront.net/melipo/characters/v1/Luma_3D_rigged.glb
+
+      - name: Render 10-second canary
+        working-directory: melipo_canary
+        run: blender --background --python render_canary.py
+
+      - name: Encode and verify MP4
+        working-directory: melipo_canary
+        run: |
+          ffmpeg -y -framerate 30 -i frames/frame_%04d.png -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -movflags +faststart melipo_3d_canary_10s.mp4
+          ffprobe -v error -show_entries format=duration -show_entries stream=width,height,r_frame_rate -of json melipo_3d_canary_10s.mp4
+
+      - name: Upload approved temporary canary artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: melipo-3d-canary-10s
+          path: |
+            melipo_canary/melipo_3d_canary_10s.mp4
+            melipo_canary/melipo_canary.blend
+          retention-days: 3
