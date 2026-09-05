@@ -38,7 +38,7 @@ jobs:
       - name: Install render tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y blender ffmpeg libegl1 libgl1-mesa-dri
+          sudo apt-get install -y blender python3-numpy ffmpeg libegl1 libgl1-mesa-dri
       - name: Download canonical sources and verify meadow
         working-directory: melipo_a_video
         run: |
@@ -50,7 +50,9 @@ jobs:
       - name: Render scene ${{ matrix.scene }}
         working-directory: melipo_a_video
         run: |
-          LIBGL_ALWAYS_SOFTWARE=1 EGL_PLATFORM=surfaceless blender --background --python render_batch_01.py -- ${{ matrix.scene }}
+          sid=$(printf '%02d' ${{ matrix.scene }})
+          LIBGL_ALWAYS_SOFTWARE=1 EGL_PLATFORM=surfaceless blender --background --python-exit-code 1 --python render_batch_01.py -- ${{ matrix.scene }}
+          test -f frames/scene_${sid}_0001.png
       - name: Encode exact master segment
         working-directory: melipo_a_video
         run: |
