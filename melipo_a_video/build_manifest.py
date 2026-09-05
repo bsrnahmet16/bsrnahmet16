@@ -15,7 +15,7 @@ duration = float(probe)
 if abs(duration - EXPECTED) > 0.08:
     raise SystemExit(f"Duration mismatch: {duration:.3f} vs {EXPECTED:.3f}")
 
-model = WhisperModel("small", device="cpu", compute_type="int8")
+model = WhisperModel("medium", device="cpu", compute_type="int8")
 segments, info = model.transcribe(
     str(AUDIO), language="tr", beam_size=5, vad_filter=True,
     word_timestamps=True, condition_on_previous_text=False
@@ -35,11 +35,11 @@ def norm(s):
     return "".join(ch for ch in unicodedata.normalize("NFKD", s) if not unicodedata.combining(ch))
 
 objects = {
-    "ari": "arı",
+    "arı": "arı",
     "araba": "araba",
     "aslan": "aslan",
-    "ayi": "Melipo (tek ayı)",
-    "agac": "ağaç",
+    "ayı": "Melipo (tek ayı)",
+    "agac": "ağaç",\n    "ağac": "ağaç",\n    "ağaç": "ağaç",
     "ay": "ay",
 }
 cues = []
