@@ -31,6 +31,21 @@ for seg in segments:
         if token:
             words.append({"word": token, "start": round(float(w.start),3), "end": round(float(w.end),3)})
 
+# The canonical song ends with "Görüşürüz çocuklar". Discard any decoder
+# hallucination after that verified closing phrase (for example subtitle credits).
+closing = None
+for i, item in enumerate(words):
+    clean = re.sub(r"[^a-zçğıöşü]", "", item["word"].casefold())
+    if clean == "görüşürüz":
+        for j in range(i + 1, min(i + 4, len(words))):
+            nxt = re.sub(r"[^a-zçğıöşü]", "", words[j]["word"].casefold())
+            if nxt == "çocuklar":
+                closing = j
+if closing is not None:
+    words = words[:closing + 1]
+texts = [" ".join(w["word"] for w in words)]
+
+
 def norm(s):
     s = s.casefold().replace("â","a")
     return "".join(ch for ch in unicodedata.normalize("NFKD", s) if not unicodedata.combining(ch))
@@ -58,18 +73,43 @@ for w in words:
             "visible_until": w["end"],
         })
 
+# Build 30 unequal scenes by snapping each target boundary to a real gap
+# between recognised words. This preserves the exact master duration while
+# avoiding cuts in the middle of a sung word or phrase.
 step = EXPECTED / SCENES
+gaps = []
+for left, right in zip(words, words[1:]):
+    gap = max(0.0, right["start"] - left["end"])
+    midpoint = (left["end"] + right["start"]) / 2.0
+    gaps.append((midpoint, gap))
+
+bounds = [0.0]
+for i in range(1, SCENES):
+    target = i * step
+    remaining = SCENES - i
+    lo = bounds[-1] + 3.0
+    hi = EXPECTED - remaining * 3.0
+    valid = [(mid, gap) for mid, gap in gaps if lo <= mid <= hi and abs(mid-target) <= 2.2]
+    if valid:
+        chosen = min(valid, key=lambda x: abs(x[0]-target) - min(x[1], 1.2)*0.30)[0]
+    else:
+        chosen = min(max(target, lo), hi)
+    bounds.append(round(chosen, 3))
+bounds.append(EXPECTED)
+
 manifest = []
 for i in range(SCENES):
-    start = round(i * step, 3)
-    end = EXPECTED if i == SCENES - 1 else round((i + 1) * step, 3)
-    scene_cues = [c for c in cues if c["word_start"] < end and c["word_end"] >= start]
+    start, end = bounds[i], bounds[i+1]
+    scene_words = [w for w in words if w["start"] < end and w["end"] > start]
+    scene_cues = [c for c in cues if c["visible_from"] < end and c["visible_until"] >= start]
+    duration_seconds = round(end - start, 3)
     manifest.append({
         "scene_id": i + 1,
         "start_seconds": start,
-        "duration_seconds": round(end - start, 3),
+        "duration_seconds": duration_seconds,
         "end_seconds": round(end, 3),
-        "song": {"url": MASTER_URL, "start_seconds": start, "duration_seconds": round(end-start,3)},
+        "lyrics": " ".join(w["word"] for w in scene_words),
+        "song": {"url": MASTER_URL, "start_seconds": start, "duration_seconds": duration_seconds},
         "required_objects": sorted(set(c["object"] for c in scene_cues)),
         "timed_cues": scene_cues,
     })
