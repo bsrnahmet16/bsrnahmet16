@@ -18,10 +18,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Blender and FFmpeg
+      - name: Install Blender, NumPy and FFmpeg
         run: |
           sudo apt-get update
-          sudo apt-get install -y blender ffmpeg
+          sudo apt-get install -y blender python3-numpy ffmpeg
 
       - name: Download approved public rigged characters
         run: |
@@ -33,7 +33,10 @@ jobs:
 
       - name: Render 10-second canary
         working-directory: melipo_canary
-        run: blender --background --python render_canary.py
+        run: |
+          blender --background --python render_canary.py
+          test -f frames/frame_0001.png
+          test -f frames/frame_0300.png
 
       - name: Encode and verify MP4
         working-directory: melipo_canary
