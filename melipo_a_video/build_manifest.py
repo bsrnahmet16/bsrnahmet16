@@ -39,7 +39,9 @@ objects = {
     "araba": "araba",
     "aslan": "aslan",
     "ayı": "Melipo (tek ayı)",
-    "agac": "ağaç",\n    "ağac": "ağaç",\n    "ağaç": "ağaç",
+    "agac": "ağaç",
+    "ağac": "ağaç",
+    "ağaç": "ağaç",
     "ay": "ay",
 }
 cues = []
@@ -78,7 +80,8 @@ if len(manifest) != 30 or len({s["scene_id"] for s in manifest}) != 30:
     raise SystemExit("Scene uniqueness failure")
 
 Path("preflight").mkdir(exist_ok=True)
-Path("preflight/transcript.txt").write_text("\n".join(texts), encoding="utf-8")
+Path("preflight/transcript.txt").write_text("
+".join(texts), encoding="utf-8")
 Path("preflight/word_timestamps.json").write_text(json.dumps(words, ensure_ascii=False, indent=2), encoding="utf-8")
 Path("preflight/object_cues.json").write_text(json.dumps(cues, ensure_ascii=False, indent=2), encoding="utf-8")
 Path("preflight/scene_manifest.json").write_text(json.dumps({
