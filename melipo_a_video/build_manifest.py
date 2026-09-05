@@ -17,8 +17,9 @@ if abs(duration - EXPECTED) > 0.08:
 
 model = WhisperModel("medium", device="cpu", compute_type="int8")
 segments, info = model.transcribe(
-    str(AUDIO), language="tr", beam_size=5, vad_filter=True,
-    word_timestamps=True, condition_on_previous_text=False
+    str(AUDIO), language="tr", beam_size=8, vad_filter=False,
+    word_timestamps=True, condition_on_previous_text=True,
+    initial_prompt="Türkçe çocuk şarkısı. A harfi, arı, araba, aslan, ayı Melipo, ağaç ve ay."
 )
 
 words = []
