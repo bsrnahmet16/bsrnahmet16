@@ -10,6 +10,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: melipo-a-video-preflight
+  cancel-in-progress: true
+
 jobs:
   timing-preflight:
     runs-on: ubuntu-latest
