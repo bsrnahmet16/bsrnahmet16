@@ -1,0 +1,596 @@
+{
+  "audio_duration": 163.92,
+  "expected_duration": 163.92,
+  "scene_count": 30,
+  "scene_duration_sum": 163.92,
+  "language": "tr",
+  "language_probability": 1,
+  "scenes": [
+    {
+      "scene_id": 1,
+      "start_seconds": 0.0,
+      "duration_seconds": 5.46,
+      "end_seconds": 5.46,
+      "lyrics": "Haydi çocuklar, hazır mıyız? Bugün yeni bir harf",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 0.0,
+        "duration_seconds": 5.46
+      },
+      "required_objects": [],
+      "timed_cues": []
+    },
+    {
+      "scene_id": 2,
+      "start_seconds": 5.46,
+      "duration_seconds": 4.72,
+      "end_seconds": 10.18,
+      "lyrics": "öğreniyoruz. Bu harfin adı? A! Hep birlikte",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 5.46,
+        "duration_seconds": 4.72
+      },
+      "required_objects": [],
+      "timed_cues": []
+    },
+    {
+      "scene_id": 3,
+      "start_seconds": 10.18,
+      "duration_seconds": 6.36,
+      "end_seconds": 16.54,
+      "lyrics": "söyleyelim. A! A ile arı, vız",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 10.18,
+        "duration_seconds": 6.36
+      },
+      "required_objects": [
+        "arı"
+      ],
+      "timed_cues": [
+        {
+          "object": "arı",
+          "word": "arı,",
+          "word_start": 14.96,
+          "word_end": 15.88,
+          "visible_from": 14.51,
+          "visible_until": 15.88
+        }
+      ]
+    },
+    {
+      "scene_id": 4,
+      "start_seconds": 16.54,
+      "duration_seconds": 5.68,
+      "end_seconds": 22.22,
+      "lyrics": "vız vız Çiçeklerin üstünde ne kadar hızlı",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 16.54,
+        "duration_seconds": 5.68
+      },
+      "required_objects": [],
+      "timed_cues": []
+    },
+    {
+      "scene_id": 5,
+      "start_seconds": 22.22,
+      "duration_seconds": 5.06,
+      "end_seconds": 27.28,
+      "lyrics": "A ile araba, dit dit dit Yolda",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 22.22,
+        "duration_seconds": 5.06
+      },
+      "required_objects": [
+        "araba"
+      ],
+      "timed_cues": [
+        {
+          "object": "araba",
+          "word": "araba,",
+          "word_start": 23.52,
+          "word_end": 24.42,
+          "visible_from": 23.07,
+          "visible_until": 24.42
+        }
+      ]
+    },
+    {
+      "scene_id": 6,
+      "start_seconds": 27.28,
+      "duration_seconds": 5.29,
+      "end_seconds": 32.57,
+      "lyrics": "gider, dönüyor dört tekeri A! A! A!",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 27.28,
+        "duration_seconds": 5.29
+      },
+      "required_objects": [],
+      "timed_cues": []
+    },
+    {
+      "scene_id": 7,
+      "start_seconds": 32.57,
+      "duration_seconds": 5.53,
+      "end_seconds": 38.1,
+      "lyrics": "Haydi söyle A! Ağzını aç ve ses ver",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 32.57,
+        "duration_seconds": 5.53
+      },
+      "required_objects": [],
+      "timed_cues": []
+    },
+    {
+      "scene_id": 8,
+      "start_seconds": 38.1,
+      "duration_seconds": 5.36,
+      "end_seconds": 43.46,
+      "lyrics": "A! Büyük A! Küçük A! Bugün",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 38.1,
+        "duration_seconds": 5.36
+      },
+      "required_objects": [],
+      "timed_cues": []
+    },
+    {
+      "scene_id": 9,
+      "start_seconds": 43.46,
+      "duration_seconds": 6.07,
+      "end_seconds": 49.53,
+      "lyrics": "öğrendik A harfini A! A! A!",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 43.46,
+        "duration_seconds": 6.07
+      },
+      "required_objects": [],
+      "timed_cues": []
+    },
+    {
+      "scene_id": 10,
+      "start_seconds": 49.53,
+      "duration_seconds": 5.35,
+      "end_seconds": 54.88,
+      "lyrics": "Alkışlarla A! Bir, iki, üç Hep birlikte",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 49.53,
+        "duration_seconds": 5.35
+      },
+      "required_objects": [],
+      "timed_cues": []
+    },
+    {
+      "scene_id": 11,
+      "start_seconds": 54.88,
+      "duration_seconds": 5.33,
+      "end_seconds": 60.21,
+      "lyrics": "A! A! A! A ile aslan,",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 54.88,
+        "duration_seconds": 5.33
+      },
+      "required_objects": [
+        "aslan"
+      ],
+      "timed_cues": [
+        {
+          "object": "aslan",
+          "word": "aslan,",
+          "word_start": 59.14,
+          "word_end": 60.18,
+          "visible_from": 58.69,
+          "visible_until": 60.18
+        }
+      ]
+    },
+    {
+      "scene_id": 12,
+      "start_seconds": 60.21,
+      "duration_seconds": 5.49,
+      "end_seconds": 65.7,
+      "lyrics": "güçlü bir dost Kocaman yelesi, sesi pek",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 60.21,
+        "duration_seconds": 5.49
+      },
+      "required_objects": [],
+      "timed_cues": []
+    },
+    {
+      "scene_id": 13,
+      "start_seconds": 65.7,
+      "duration_seconds": 5.7,
+      "end_seconds": 71.4,
+      "lyrics": "hoş A ile ayı, dans eder neşeyle Melipo",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 65.7,
+        "duration_seconds": 5.7
+      },
+      "required_objects": [
+        "Melipo (tek ayı)"
+      ],
+      "timed_cues": [
+        {
+          "object": "Melipo (tek ayı)",
+          "word": "ayı,",
+          "word_start": 67.58,
+          "word_end": 68.24,
+          "visible_from": 67.13,
+          "visible_until": 68.24
+        }
+      ]
+    },
+    {
+      "scene_id": 14,
+      "start_seconds": 71.4,
+      "duration_seconds": 5.33,
+      "end_seconds": 76.73,
+      "lyrics": "el sallar iki eliyle A! A! A!",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 71.4,
+        "duration_seconds": 5.33
+      },
+      "required_objects": [],
+      "timed_cues": []
+    },
+    {
+      "scene_id": 15,
+      "start_seconds": 76.73,
+      "duration_seconds": 5.17,
+      "end_seconds": 81.9,
+      "lyrics": "Haydi söyle A! Ağzını aç ve ses",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 76.73,
+        "duration_seconds": 5.17
+      },
+      "required_objects": [],
+      "timed_cues": []
+    },
+    {
+      "scene_id": 16,
+      "start_seconds": 81.9,
+      "duration_seconds": 5.22,
+      "end_seconds": 87.12,
+      "lyrics": "ver A! Büyük A! Küçük A!",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 81.9,
+        "duration_seconds": 5.22
+      },
+      "required_objects": [],
+      "timed_cues": []
+    },
+    {
+      "scene_id": 17,
+      "start_seconds": 87.12,
+      "duration_seconds": 5.6,
+      "end_seconds": 92.72,
+      "lyrics": "Bugün öğrendik A harfini A!",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 87.12,
+        "duration_seconds": 5.6
+      },
+      "required_objects": [],
+      "timed_cues": []
+    },
+    {
+      "scene_id": 18,
+      "start_seconds": 92.72,
+      "duration_seconds": 5.38,
+      "end_seconds": 98.1,
+      "lyrics": "A! A! Alkışlarla A! Bir, iki, üç Hep",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 92.72,
+        "duration_seconds": 5.38
+      },
+      "required_objects": [],
+      "timed_cues": []
+    },
+    {
+      "scene_id": 19,
+      "start_seconds": 98.1,
+      "duration_seconds": 6.18,
+      "end_seconds": 104.28,
+      "lyrics": "birlikte A! A! A ile ağaç,",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 98.1,
+        "duration_seconds": 6.18
+      },
+      "required_objects": [
+        "ağaç"
+      ],
+      "timed_cues": [
+        {
+          "object": "ağaç",
+          "word": "ağaç,",
+          "word_start": 103.32,
+          "word_end": 104.28,
+          "visible_from": 102.87,
+          "visible_until": 104.28
+        }
+      ]
+    },
+    {
+      "scene_id": 20,
+      "start_seconds": 104.28,
+      "duration_seconds": 5.0,
+      "end_seconds": 109.28,
+      "lyrics": "dalları yukarı Yeşil yaprakları, süsler",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 104.28,
+        "duration_seconds": 5.0
+      },
+      "required_objects": [
+        "ağaç"
+      ],
+      "timed_cues": [
+        {
+          "object": "ağaç",
+          "word": "ağaç,",
+          "word_start": 103.32,
+          "word_end": 104.28,
+          "visible_from": 102.87,
+          "visible_until": 104.28
+        }
+      ]
+    },
+    {
+      "scene_id": 21,
+      "start_seconds": 109.28,
+      "duration_seconds": 5.64,
+      "end_seconds": 114.92,
+      "lyrics": "etrafı A ile ay, gökyüzünde parlar A",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 109.28,
+        "duration_seconds": 5.64
+      },
+      "required_objects": [
+        "ay"
+      ],
+      "timed_cues": [
+        {
+          "object": "ay",
+          "word": "ay,",
+          "word_start": 111.76,
+          "word_end": 112.26,
+          "visible_from": 111.31,
+          "visible_until": 112.26
+        }
+      ]
+    },
+    {
+      "scene_id": 22,
+      "start_seconds": 114.92,
+      "duration_seconds": 5.36,
+      "end_seconds": 120.28,
+      "lyrics": "harfini bulan yıldızları sayar Bumba oyunu",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 114.92,
+        "duration_seconds": 5.36
+      },
+      "required_objects": [],
+      "timed_cues": []
+    },
+    {
+      "scene_id": 23,
+      "start_seconds": 120.28,
+      "duration_seconds": 5.55,
+      "end_seconds": 125.83,
+      "lyrics": "hangisi A ile başlar? Ara mı? Evet! Balık mı? Hayır!",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 120.28,
+        "duration_seconds": 5.55
+      },
+      "required_objects": [
+        "araba"
+      ],
+      "timed_cues": [
+        {
+          "object": "araba",
+          "word": "Araba",
+          "word_start": 125.98,
+          "word_end": 126.4,
+          "visible_from": 125.53,
+          "visible_until": 126.4
+        }
+      ]
+    },
+    {
+      "scene_id": 24,
+      "start_seconds": 125.83,
+      "duration_seconds": 5.93,
+      "end_seconds": 131.76,
+      "lyrics": "Araba mı? Evet! Aslan mı? Evet! Harika çocuklar",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 125.83,
+        "duration_seconds": 5.93
+      },
+      "required_objects": [
+        "araba",
+        "aslan"
+      ],
+      "timed_cues": [
+        {
+          "object": "araba",
+          "word": "Araba",
+          "word_start": 125.98,
+          "word_end": 126.4,
+          "visible_from": 125.53,
+          "visible_until": 126.4
+        },
+        {
+          "object": "aslan",
+          "word": "Aslan",
+          "word_start": 127.52,
+          "word_end": 127.96,
+          "visible_from": 127.07,
+          "visible_until": 127.96
+        }
+      ]
+    },
+    {
+      "scene_id": 25,
+      "start_seconds": 131.76,
+      "duration_seconds": 5.02,
+      "end_seconds": 136.78,
+      "lyrics": "A! A! A! Artık biliyoruz A! Arı,",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 131.76,
+        "duration_seconds": 5.02
+      },
+      "required_objects": [
+        "araba",
+        "arı"
+      ],
+      "timed_cues": [
+        {
+          "object": "arı",
+          "word": "Arı,",
+          "word_start": 136.3,
+          "word_end": 136.78,
+          "visible_from": 135.85,
+          "visible_until": 136.78
+        },
+        {
+          "object": "araba",
+          "word": "araba,",
+          "word_start": 136.78,
+          "word_end": 137.74,
+          "visible_from": 136.33,
+          "visible_until": 137.74
+        }
+      ]
+    },
+    {
+      "scene_id": 26,
+      "start_seconds": 136.78,
+      "duration_seconds": 5.45,
+      "end_seconds": 142.23,
+      "lyrics": "araba, aslan ve ay Büyük A!",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 136.78,
+        "duration_seconds": 5.45
+      },
+      "required_objects": [
+        "araba",
+        "arı",
+        "aslan",
+        "ay"
+      ],
+      "timed_cues": [
+        {
+          "object": "arı",
+          "word": "Arı,",
+          "word_start": 136.3,
+          "word_end": 136.78,
+          "visible_from": 135.85,
+          "visible_until": 136.78
+        },
+        {
+          "object": "araba",
+          "word": "araba,",
+          "word_start": 136.78,
+          "word_end": 137.74,
+          "visible_from": 136.33,
+          "visible_until": 137.74
+        },
+        {
+          "object": "aslan",
+          "word": "aslan",
+          "word_start": 138.42,
+          "word_end": 138.96,
+          "visible_from": 137.97,
+          "visible_until": 138.96
+        },
+        {
+          "object": "ay",
+          "word": "ay",
+          "word_start": 139.26,
+          "word_end": 139.9,
+          "visible_from": 138.81,
+          "visible_until": 139.9
+        }
+      ]
+    },
+    {
+      "scene_id": 27,
+      "start_seconds": 142.23,
+      "duration_seconds": 5.93,
+      "end_seconds": 148.16,
+      "lyrics": "Küçük A! A harfi bizimle yaşasına",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 142.23,
+        "duration_seconds": 5.93
+      },
+      "required_objects": [],
+      "timed_cues": []
+    },
+    {
+      "scene_id": 28,
+      "start_seconds": 148.16,
+      "duration_seconds": 4.96,
+      "end_seconds": 153.12,
+      "lyrics": "El sallayın bütün çocuklar",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 148.16,
+        "duration_seconds": 4.96
+      },
+      "required_objects": [],
+      "timed_cues": []
+    },
+    {
+      "scene_id": 29,
+      "start_seconds": 153.12,
+      "duration_seconds": 5.336,
+      "end_seconds": 158.456,
+      "lyrics": "Görüşürüz çocuklar",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 153.12,
+        "duration_seconds": 5.336
+      },
+      "required_objects": [],
+      "timed_cues": []
+    },
+    {
+      "scene_id": 30,
+      "start_seconds": 158.456,
+      "duration_seconds": 5.464,
+      "end_seconds": 163.92,
+      "lyrics": "",
+      "song": {
+        "url": "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3",
+        "start_seconds": 158.456,
+        "duration_seconds": 5.464
+      },
+      "required_objects": [],
+      "timed_cues": []
+    }
+  ]
+}
