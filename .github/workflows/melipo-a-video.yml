@@ -5,7 +5,7 @@ on:
   push:
     paths:
       - ".github/workflows/melipo-a-video.yml"
-      - "melipo_a_video/**"
+      - "melipo_a_video/build_manifest.py"
 
 permissions:
   contents: read
