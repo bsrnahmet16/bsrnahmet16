@@ -151,6 +151,17 @@ def is_under(obj,root):
  return False
 for obj in bpy.data.objects:
  if obj.type=='MESH' and not is_under(obj,pofi): obj.hide_render=True
+
+# Soft semi-transparent contact shadow anchors Pofi to the photographed ground.
+shadow_mat=bpy.data.materials.new('Pofi contact shadow'); shadow_mat.use_nodes=True
+sb=shadow_mat.node_tree.nodes.get('Principled BSDF')
+sb.inputs['Base Color'].default_value=(.012,.016,.020,1)
+sb.inputs['Roughness'].default_value=1.0
+sb.inputs['Alpha'].default_value=.28
+shadow_mat.blend_method='BLEND'; shadow_mat.use_screen_refraction=True
+bpy.ops.mesh.primitive_uv_sphere_add(segments=64,ring_count=16,location=(-3.25,-.02,.075))
+contact=bpy.context.object; contact.name='Pofi soft contact shadow'
+contact.scale=(.72,.34,.025); contact.data.materials.append(shadow_mat)
 scene.render.film_transparent=True
 # Pixel-exact compositor background: fills the complete 1280x720 frame without
 # perspective distortion, mirroring or uncovered black borders.
