@@ -19,7 +19,7 @@ jobs:
       - name: Install Blender and ffmpeg
         run: |
           sudo apt-get update
-          sudo apt-get install -y blender ffmpeg libegl1 libgl1-mesa-dri
+          sudo apt-get install -y blender python3-numpy ffmpeg libegl1 libgl1-mesa-dri
       - name: Download canonical and CC0 assets
         working-directory: melipo_a_video
         run: |
