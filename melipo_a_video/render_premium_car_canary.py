@@ -151,13 +151,16 @@ def is_under(obj,root):
  return False
 for obj in bpy.data.objects:
  if obj.type=='MESH' and not is_under(obj,pofi): obj.hide_render=True
-scene.render.film_transparent=True
-scene.use_nodes=True
-cn=scene.node_tree.nodes;cl=scene.node_tree.links;cn.clear()
-rl=cn.new('CompositorNodeRLayers');plate=cn.new('CompositorNodeImage');plate.image=bpy.data.images.load('assets/premium_car_background_v1.png');plate.image.pack()
-scale=cn.new('CompositorNodeScale');scale.space='RENDER_SIZE';alpha=cn.new('CompositorNodeAlphaOver');comp=cn.new('CompositorNodeComposite')
-alpha.inputs[0].default_value=1.0
-cl.new(plate.outputs['Image'],scale.inputs['Image']);cl.new(scale.outputs['Image'],alpha.inputs[1]);cl.new(rl.outputs['Image'],alpha.inputs[2]);cl.new(alpha.outputs['Image'],comp.inputs['Image'])
+scene.render.film_transparent=False
+# A camera-facing physical plate is more deterministic than headless compositor
+# image nodes on GitHub's Blender package.
+bpy.ops.mesh.primitive_plane_add(size=2,location=(0,7.5,3.15),rotation=(math.radians(90),0,0))
+plate=bpy.context.object;plate.name='Premium environment plate';plate.scale=(9.05,5.09,1)
+pm=bpy.data.materials.new('Premium plate material');pm.use_nodes=True
+pn=pm.node_tree.nodes;pl=pm.node_tree.links;pn.clear()
+pout=pn.new('ShaderNodeOutputMaterial');emit=pn.new('ShaderNodeEmission');tex=pn.new('ShaderNodeTexImage')
+tex.image=bpy.data.images.load('assets/premium_car_background_v1.png');tex.image.pack();emit.inputs['Strength'].default_value=.82
+pl.new(tex.outputs['Color'],emit.inputs['Color']);pl.new(emit.outputs['Emission'],pout.inputs['Surface']);plate.data.materials.append(pm)
 
 bpy.ops.wm.save_as_mainfile(filepath='a_premium_car_canary.blend')
 bpy.ops.render.render(animation=True)
