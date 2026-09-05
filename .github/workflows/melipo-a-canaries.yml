@@ -1,0 +1,67 @@
+name: Melipo A Three Canary Gate
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/melipo-a-canaries.yml"
+      - "melipo_a_video/render_canary.py"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: melipo-a-three-canaries
+  cancel-in-progress: true
+
+jobs:
+  render:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - kind: solo
+            audio_start: "66.200"
+          - kind: object
+            audio_start: "22.500"
+          - kind: group
+            audio_start: "159.920"
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install render tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender python3-numpy ffmpeg libegl1 libgl1-mesa-dri mesa-utils
+      - name: Download approved sources
+        working-directory: melipo_a_video
+        run: |
+          mkdir -p assets frames
+          curl --fail --location --retry 5 -o a_song_vocals.mp3 https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3
+          curl --fail --location --retry 5 -o assets/Melipo_3D_rigged.glb https://d1ojnqroiei5k7.cloudfront.net/melipo/characters/v1/Melipo_3D_rigged.glb
+          curl --fail --location --retry 5 -o assets/Pofi_3D_rigged.glb https://d1ojnqroiei5k7.cloudfront.net/melipo/characters/v1/Pofi_3D_rigged.glb
+          curl --fail --location --retry 5 -o assets/Zipzi_3D_rigged.glb https://d1ojnqroiei5k7.cloudfront.net/melipo/characters/v1/Zipzi_3D_rigged.glb
+          curl --fail --location --retry 5 -o assets/Luma_3D_rigged.glb https://d1ojnqroiei5k7.cloudfront.net/melipo/characters/v1/Luma_3D_rigged.glb
+      - name: Render ${{ matrix.kind }} canary
+        working-directory: melipo_a_video
+        run: |
+          rm -rf frames
+          mkdir -p frames
+          LIBGL_ALWAYS_SOFTWARE=1 EGL_PLATFORM=surfaceless blender --background --python render_canary.py -- ${{ matrix.kind }}
+          test -f frames/${{ matrix.kind }}_0001.png
+          test -f frames/${{ matrix.kind }}_0120.png
+      - name: Encode with real song segment
+        working-directory: melipo_a_video
+        run: |
+          ffmpeg -y -framerate 30 -i frames/${{ matrix.kind }}_%04d.png -ss ${{ matrix.audio_start }} -t 4.000 -i a_song_vocals.mp3 -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -c:a aac -b:a 192k -shortest -movflags +faststart a_${{ matrix.kind }}_canary.mp4
+          ffprobe -v error -show_entries format=duration -show_entries stream=width,height,r_frame_rate -of json a_${{ matrix.kind }}_canary.mp4
+      - name: Upload temporary canary
+        uses: actions/upload-artifact@v4
+        with:
+          name: melipo-a-${{ matrix.kind }}-canary
+          path: |
+            melipo_a_video/a_${{ matrix.kind }}_canary.mp4
+            melipo_a_video/a_${{ matrix.kind }}_canary.blend
+          retention-days: 3
