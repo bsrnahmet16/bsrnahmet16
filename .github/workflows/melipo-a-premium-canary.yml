@@ -19,15 +19,13 @@ jobs:
       - name: Install Blender and ffmpeg
         run: |
           sudo apt-get update
-          sudo apt-get install -y blender python3-numpy ffmpeg libegl1 libgl1-mesa-dri
+          sudo apt-get install -y blender ffmpeg libegl1 libgl1-mesa-dri
       - name: Download canonical and CC0 assets
         working-directory: melipo_a_video
         run: |
           mkdir -p assets frames
           curl --fail --location --retry 5 -o a_song_vocals.mp3 https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3
           curl --fail --location --retry 5 -o assets/Pofi_3D_rigged.glb https://d1ojnqroiei5k7.cloudfront.net/melipo/characters/v1/Pofi_3D_rigged.glb
-          curl --fail --location --retry 5 -o assets/ToyCar.glb https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/ToyCar/glTF-Binary/ToyCar.glb
-          curl --fail --location --retry 5 -o assets/meadow_2k.hdr https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/meadow_2k.hdr
       - name: Render premium A ile araba canary
         working-directory: melipo_a_video
         run: |
