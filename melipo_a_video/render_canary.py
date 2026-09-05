@@ -61,6 +61,9 @@ else:
  for x,y in [(-7,3),(7,3),(-6,6),(6,6)]:
   cyl("Trunk",(x,y,1),.25,2,(.26,.12,.05)); sphere("Crown",(x,y,2.7),(1.2,1.0,1.3),(.13,.33,.17))
 
+# bright natural sky backdrop
+cube("SkyWall",(0,7,5),(12,.12,6),(.30,.50,.68),.04)
+
 # soft sun disk
 sphere("Sun",(-6,5,7),(1.0,1.0,1.0),(.95,.68,.24))
 
@@ -107,10 +110,10 @@ def add_character(label,x):
 if kind=="solo":
  add_character("Melipo",-1.7); text_obj("A  a",(2.6,.15,2.5),1.55)
 elif kind=="object":
- add_character("Pofi",-2.7); text_obj("A  a",(0,2.7,4.8),1.25)
+ add_character("Pofi",-2.7); text_obj("A  a",(0,2.7,4.05),1.25)
 else:
  for label,x in zip(("Melipo","Pofi","Zipzi","Luma"),(-4.2,-1.4,1.4,4.2)): add_character(label,x)
- text_obj("A  a",(0,2.6,5.0),1.20)
+ text_obj("A  a",(0,2.6,4.05),1.20)
 
 cam.keyframe_insert(data_path="location",frame=1); cam.location.y=cam_y+.18;cam.keyframe_insert(data_path="location",frame=60);cam.location.y=cam_y;cam.keyframe_insert(data_path="location",frame=120)
 for fc in cam.animation_data.action.fcurves:
