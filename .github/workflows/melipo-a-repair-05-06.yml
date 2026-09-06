@@ -1,0 +1,68 @@
+name: Melipo A Repair Scenes 05-06
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/melipo-a-repair-05-06.yml"
+      - "melipo_a_video/render_batch_02.py"
+      - "melipo_a_video/assets_bg_chunks/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: melipo-a-repair-05-06
+  cancel-in-progress: true
+
+jobs:
+  render:
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include:
+          - scene: 5
+            start: "22.220"
+            duration: "5.060"
+          - scene: 6
+            start: "27.280"
+            duration: "5.290"
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install render tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender python3-numpy ffmpeg libegl1 libgl1-mesa-dri
+      - name: Rebuild and verify canonical sources
+        working-directory: melipo_a_video
+        run: |
+          mkdir -p assets frames
+          curl --fail --location --retry 5 -o a_song_vocals.mp3 https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3
+          curl --fail --location --retry 5 -o assets/Pofi_3D_rigged.glb https://d1ojnqroiei5k7.cloudfront.net/melipo/characters/v1/Pofi_3D_rigged.glb
+          cat assets_bg_chunks/premium_car_background.b64.part* | base64 -d > assets/premium_car_background_v1.png
+          echo "1324a46efdff94fa0a52ec73a67af18343d587fd14ac866ba58173873034fef6  assets/premium_car_background_v1.png" | sha256sum -c -
+      - name: Render repaired scene ${{ matrix.scene }}
+        working-directory: melipo_a_video
+        run: |
+          sid=$(printf '%02d' ${{ matrix.scene }})
+          LIBGL_ALWAYS_SOFTWARE=1 EGL_PLATFORM=surfaceless blender --background --python-exit-code 1 --python render_batch_02.py -- ${{ matrix.scene }}
+          test -f frames/scene_${sid}_0001.png
+      - name: Encode and build QC sheet
+        working-directory: melipo_a_video
+        run: |
+          sid=$(printf '%02d' ${{ matrix.scene }})
+          ffmpeg -y -framerate 30 -i frames/scene_${sid}_%04d.png -ss ${{ matrix.start }} -t ${{ matrix.duration }} -i a_song_vocals.mp3 -c:v libx264 -preset medium -crf 17 -pix_fmt yuv420p -c:a aac -b:a 192k -shortest -movflags +faststart a_scene_${sid}.mp4
+          ffprobe -v error -show_entries format=duration -show_entries stream=width,height,r_frame_rate -of json a_scene_${sid}.mp4
+          ffmpeg -y -loglevel error -i a_scene_${sid}.mp4 -vf "fps=3,scale=480:-1,tile=5x4" -frames:v 1 a_scene_${sid}_contact.jpg
+      - name: Upload repaired review package
+        uses: actions/upload-artifact@v4
+        with:
+          name: melipo-a-repaired-scene-${{ matrix.scene }}
+          path: |
+            melipo_a_video/a_scene_*.mp4
+            melipo_a_video/a_scene_*.blend
+            melipo_a_video/a_scene_*_contact.jpg
+          retention-days: 5
