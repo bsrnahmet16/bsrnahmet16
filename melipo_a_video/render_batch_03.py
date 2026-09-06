@@ -84,17 +84,27 @@ def import_rig(path,name,height,loc):
  mnx,mxx,mny,mxy,mnz,mxz=bbox(objs);sc=height/max(mxz-mnz,.001)
  root.scale=(sc,sc,sc);root.location=(loc[0]-(mnx+mxx)*.5*sc,loc[1]-(mny+mxy)*.5*sc,loc[2]-mnz*sc)
  for arm in [o for o in objs if o.type=='ARMATURE']:
-  # These chorus/teaching shots use the native Agree_Gesture clip rather
-  # than a walk cycle, keeping the body expressive without changing identity.
-  act=next((a for a in acts if 'agree' in a.name.lower()),None) or (acts[0] if acts else None)
+  # Use only animations embedded in the canonical GLB.  The two teaching
+  # shots gesture; the closing chorus of this batch is slightly more lively.
+  wanted='running' if SCENE==9 else 'agree'
+  act=next((a for a in acts if wanted in a.name.lower()),None) or (acts[0] if acts else None)
   if act:
    arm.animation_data_create();arm.animation_data.action=act
    for fc in act.fcurves:
     if not any(m.type=='CYCLES' for m in fc.modifiers):fc.modifiers.new(type='CYCLES')
+   # The supplied body rig has no separate mouth shape keys.  Its headfront
+   # bone is therefore driven by a very small vowel pulse.  The deformation
+   # is deliberately bounded so the canonical face cannot drift.
+   mouth=arm.pose.bones.get('headfront')
+   if mouth:
+    for f in range(10,FRAMES,14):
+     mouth.scale=(1,1,1);mouth.keyframe_insert('scale',frame=max(1,f-3))
+     mouth.scale=(1.0,.985,1.025);mouth.keyframe_insert('scale',frame=f)
+     mouth.scale=(1,1,1);mouth.keyframe_insert('scale',frame=min(FRAMES,f+4))
  return root
 
-pofi_loc={7:(-3.05,-.05,-.46),8:(-3.05,-.05,-.46),9:(-3.05,-.05,-.46)}[SCENE]
-pofi=import_rig('assets/Pofi_3D_rigged.glb','Pofi',4.45,pofi_loc);pofi.rotation_euler[2]=math.radians(-5)
+pofi_loc={7:(-2.55,-.05,-.46),8:(-2.55,-.05,-.46),9:(-2.55,-.05,-.46)}[SCENE]
+pofi=import_rig('assets/Pofi_3D_rigged.glb','Pofi',5.25,pofi_loc);pofi.rotation_euler[2]=math.radians(-5)
 pofi.keyframe_insert('location',frame=1)
 pofi.location.x += .22
 pofi.keyframe_insert('location',frame=max(2,FRAMES//2))
@@ -150,7 +160,7 @@ for o in (back,front):
    # Three readable teaching beats: A, buyuk A, kucuk a.
    for f in (18,58,100):
     o.scale=(1,1,1);o.keyframe_insert('scale',frame=max(1,f-5))
-    o.scale=(1.08,1.08,1.08);o.keyframe_insert('scale',frame=f)
+    o.scale=(1.12,1.12,1.12);o.keyframe_insert('scale',frame=f)
     o.scale=(1,1,1);o.keyframe_insert('scale',frame=min(FRAMES,f+6))
   o.scale=(1,1,1);o.keyframe_insert('scale',frame=FRAMES)
  for fc in o.animation_data.action.fcurves:
