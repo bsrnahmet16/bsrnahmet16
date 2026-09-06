@@ -90,6 +90,17 @@ def import_rig(path,name,height,loc):
   act=next((a for a in acts if wanted in a.name.lower()),None) or (acts[0] if acts else None)
   if act:
    arm.animation_data_create();arm.animation_data.action=act
+   if SCENE in (14,15):
+    # The canonical Agree_Gesture spans about 13 seconds.  Compress its full
+    # motion into this five-second teaching shot so both arms complete the
+    # gesture instead of showing only the quiet opening pose.
+    lo,hi=act.frame_range
+    span=max(1.0,hi-lo);factor=max(1.0,FRAMES-1)/span
+    for fc in act.fcurves:
+     for kp in fc.keyframe_points:
+      kp.co.x=1+(kp.co.x-lo)*factor
+      kp.handle_left.x=1+(kp.handle_left.x-lo)*factor
+      kp.handle_right.x=1+(kp.handle_right.x-lo)*factor
    for fc in act.fcurves:
     if not any(m.type=='CYCLES' for m in fc.modifiers):fc.modifiers.new(type='CYCLES')
    # The supplied body rig has no separate mouth shape keys.  Its headfront
@@ -99,7 +110,7 @@ def import_rig(path,name,height,loc):
    if mouth:
     for f in range(10,FRAMES,14):
      mouth.scale=(1,1,1);mouth.keyframe_insert('scale',frame=max(1,f-3))
-     mouth.scale=(1.0,.985,1.025);mouth.keyframe_insert('scale',frame=f)
+     mouth.scale=(1.0,.94,1.08) if SCENE==15 else (1.0,.975,1.04);mouth.keyframe_insert('scale',frame=f)
      mouth.scale=(1,1,1);mouth.keyframe_insert('scale',frame=min(FRAMES,f+4))
  return root
 
