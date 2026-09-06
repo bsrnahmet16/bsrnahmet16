@@ -1,0 +1,98 @@
+name: Melipo A Final Assembly
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/melipo-a-final.yml"
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: melipo-a-final-assembly
+  cancel-in-progress: false
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install media tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Download the visually accepted scene artifacts
+        run: |
+          set -euo pipefail
+          mkdir -p scenes
+          declare -A runs=(
+            [1]=33999272195 [2]=33999272195 [3]=33999272195
+            [4]=34000263267 [5]=34001156899 [6]=34001156899
+            [7]=34010117080 [8]=34010117080 [9]=34010117080
+            [10]=34012376747 [11]=34012376747 [12]=34012376747
+            [13]=34013175277 [14]=34014092489 [15]=34014092489
+            [16]=34014926293 [17]=34014926293 [18]=34014926293
+            [19]=34016723602 [20]=34016723602 [21]=34016723602
+            [22]=34019833220 [23]=34019833220 [24]=34019833220
+            [25]=34024514030 [26]=34024514030 [27]=34024514030
+            [28]=34029318944 [29]=34029318944 [30]=34029318944
+          )
+          for n in $(seq 1 30); do
+            mkdir -p "scenes/$n"
+            gh run download "${runs[$n]}" -R "${GITHUB_REPOSITORY}" -n "melipo-a-scene-$n" -D "scenes/$n"
+            src=$(find "scenes/$n" -type f -name '*.mp4' | head -n1)
+            test -n "$src"
+            cp "$src" "scenes/scene_$(printf '%02d' "$n").mp4"
+          done
+      - name: Download master audio
+        run: |
+          curl --fail --location --retry 4 --retry-delay 2 -o master_a_song.mp3             "https://d1ojnqroiei5k7.cloudfront.net/melipo/music/A/v1/a_song_vocals.mp3"
+          test -s master_a_song.mp3
+      - name: Normalize scene timing and assemble
+        run: |
+          set -euo pipefail
+          durations=(5.46 4.72 6.36 5.68 5.06 5.29 5.53 5.36 6.07 5.35 5.33 5.49 5.70 5.33 5.17 5.22 5.60 5.38 6.18 5.00 5.64 5.36 5.55 5.93 5.02 5.45 5.93 4.96 5.336 5.464)
+          mkdir -p normalized
+          : > concat.txt
+          for n in $(seq 1 30); do
+            src="scenes/scene_$(printf '%02d' "$n").mp4"
+            dst="normalized/scene_$(printf '%02d' "$n").mp4"
+            dur="${durations[$((n-1))]}"
+            ffmpeg -hide_banner -loglevel error -y -i "$src" -an               -vf "fps=30,scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1,tpad=stop_mode=clone:stop_duration=10,trim=duration=$dur,setpts=PTS-STARTPTS"               -r 30 -c:v libx264 -preset fast -crf 16 -pix_fmt yuv420p -t "$dur" "$dst"
+            printf "file '%s'\n" "$PWD/$dst" >> concat.txt
+          done
+          ffmpeg -hide_banner -loglevel error -y -f concat -safe 0 -i concat.txt             -i master_a_song.mp3 -map 0:v:0 -map 1:a:0 -t 163.920             -c:v libx264 -preset medium -crf 16 -pix_fmt yuv420p -r 30             -c:a aac -b:a 192k -ar 48000 -ac 2 -movflags +faststart             melipo_A_final_candidate.mp4
+      - name: Generate technical and visual QC evidence
+        run: |
+          set -euo pipefail
+          mkdir -p final_qc
+          ffprobe -v error -count_frames -show_streams -show_format -of json             melipo_A_final_candidate.mp4 > final_qc/ffprobe.json
+          python3 - <<'PY'
+          import json
+          j=json.load(open("final_qc/ffprobe.json"))
+          fmt=float(j["format"]["duration"])
+          vids=[s for s in j["streams"] if s["codec_type"]=="video"]
+          auds=[s for s in j["streams"] if s["codec_type"]=="audio"]
+          assert len(vids)==1 and len(auds)==1
+          v=vids[0]
+          assert int(v["width"])==1920 and int(v["height"])==1080
+          assert v["r_frame_rate"]=="30/1"
+          assert abs(fmt-163.920) <= 0.035, fmt
+          open("final_qc/technical_pass.txt","w").write(
+            f"PASS\nduration={fmt:.3f}\nresolution=1920x1080\nfps=30\nvideo_streams=1\naudio_streams=1\n")
+          PY
+          ffmpeg -hide_banner -loglevel error -y -i melipo_A_final_candidate.mp4             -vf "fps=120/163.920,scale=320:-1,tile=12x10" -frames:v 1 final_qc/contact_sheet_120.jpg
+          ffmpeg -hide_banner -loglevel error -y -sseof -0.04 -i melipo_A_final_candidate.mp4             -frames:v 1 final_qc/final_frame.png
+      - name: Upload final candidate and QC evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: melipo-a-final-candidate-qc
+          path: |
+            melipo_A_final_candidate.mp4
+            final_qc/
+          retention-days: 5
