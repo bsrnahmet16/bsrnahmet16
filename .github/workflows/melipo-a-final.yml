@@ -44,7 +44,7 @@ jobs:
           )
           for n in $(seq 1 30); do
             mkdir -p "scenes/$n"
-            gh run download "${runs[$n]}" -R "${GITHUB_REPOSITORY}" -n "melipo-a-scene-$n" -D "scenes/$n"
+            artifact="melipo-a-scene-$n"\n            if [ "$n" -eq 5 ] || [ "$n" -eq 6 ]; then artifact="melipo-a-repaired-scene-$n"; fi\n            gh run download "${runs[$n]}" -R "${GITHUB_REPOSITORY}" -n "$artifact" -D "scenes/$n"
             src=$(find "scenes/$n" -type f -name '*.mp4' | head -n1)
             test -n "$src"
             cp "$src" "scenes/scene_$(printf '%02d' "$n").mp4"
