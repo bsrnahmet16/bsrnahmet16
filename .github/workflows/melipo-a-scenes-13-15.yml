@@ -21,9 +21,6 @@ jobs:
       max-parallel: 3
       matrix:
         include:
-          - scene: 13
-            start: "65.700"
-            duration: "5.700"
           - scene: 14
             start: "71.400"
             duration: "5.330"
