@@ -35,9 +35,9 @@ def sphere(name,loc,scale,color):
  bpy.ops.mesh.primitive_uv_sphere_add(segments=32, ring_count=16, location=loc); o=bpy.context.object; o.name=name; o.scale=scale; o.data.materials.append(mat(name+"Mat",color)); return o
 def cyl(name,loc,radius,depth,color,rot=(0,0,0)):
  bpy.ops.mesh.primitive_cylinder_add(vertices=32,radius=radius,depth=depth,location=loc,rotation=rot); o=bpy.context.object;o.name=name;o.data.materials.append(mat(name+"Mat",color));return o
-def text_obj(body,loc,size=1.35):
+def text_obj(body,loc,size=1.35,color=(0.97,0.78,0.12),tag="face"):
  bpy.ops.object.text_add(location=loc,rotation=(math.radians(90),0,0)); o=bpy.context.object; o.data.body=body;o.data.align_x="CENTER";o.data.align_y="CENTER";o.data.size=size;o.data.extrude=.045;o.data.bevel_depth=.018
- o.data.materials.append(mat("LetterMat",(0.97,0.78,0.12),.58)); return o
+ o.data.materials.append(mat("LetterMat_"+tag,color,.58)); return o
 
 # ground and environment
 if kind=="solo":
@@ -115,7 +115,8 @@ elif kind=="object":
  add_character("Pofi",-2.7); text_obj("A  a",(0,2.7,4.05),1.25)
 else:
  for label,x in zip(("Melipo","Pofi","Zipzi","Luma"),(-4.35,-1.45,1.45,4.35)): char_roots.append(add_character(label,x))
- text_obj("A    a",(0,2.6,4.45),1.85)
+ text_obj("A    a",(0,2.72,4.30),3.05,(0.015,0.055,0.16),"outline")
+ text_obj("A    a",(0,2.54,4.30),2.72,(1.0,0.74,0.08),"face")
 
 cam.keyframe_insert(data_path="location",frame=1); cam.location.y=cam_y+.18;cam.keyframe_insert(data_path="location",frame=max(2,FRAMES//2));cam.location.y=cam_y;cam.keyframe_insert(data_path="location",frame=FRAMES)
 for fc in cam.animation_data.action.fcurves:
