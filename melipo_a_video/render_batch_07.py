@@ -200,12 +200,32 @@ else:
 # Large, unmistakable 3D tree and moon teaching objects.  Their visibility is
 # driven from the verified word timing rather than from scene boundaries.
 tree=bpy.data.objects.new('TREE_TEACHING_ROOT',None);bpy.context.collection.objects.link(tree)
-ttrunk=material('Teaching tree bark',(.26,.075,.025),.82)
-tleaf=material('Teaching tree foliage',(.035,.29,.07),.70)
-tr=cylinder('Teaching tree trunk',(0,0,1.05),.25,2.1,ttrunk);tr.parent=tree
-for x,z,s in [(-.55,2.25,.72),(0,2.55,.85),(.58,2.25,.75),(-.22,3.05,.66),(.30,3.03,.62)]:
- c=sphere('Teaching tree crown',(x,0,z),(s,.46,s),tleaf);c.parent=tree
-tree.location=(2.65,.05,-.45)
+ttrunk=bpy.data.materials.new('Teaching tree bark');ttrunk.use_nodes=True
+tn=ttrunk.node_tree.nodes;tl=ttrunk.node_tree.links;tbs=tn.get('Principled BSDF')
+tnoise=tn.new('ShaderNodeTexNoise');tnoise.inputs['Scale'].default_value=8;tnoise.inputs['Detail'].default_value=6;tnoise.inputs['Roughness'].default_value=.76
+tramp=tn.new('ShaderNodeValToRGB');tramp.color_ramp.elements[0].color=(.045,.012,.004,1);tramp.color_ramp.elements[1].color=(.34,.105,.025,1)
+tbump=tn.new('ShaderNodeBump');tbump.inputs['Strength'].default_value=.42;tbump.inputs['Distance'].default_value=.12
+tl.new(tnoise.outputs['Fac'],tramp.inputs['Fac']);tl.new(tramp.outputs['Color'],tbs.inputs['Base Color']);tl.new(tnoise.outputs['Fac'],tbump.inputs['Height']);tl.new(tbump.outputs['Normal'],tbs.inputs['Normal']);tbs.inputs['Roughness'].default_value=.88
+tleaf=bpy.data.materials.new('Teaching tree foliage');tleaf.use_nodes=True
+ln=tleaf.node_tree.nodes;ll=tleaf.node_tree.links;lbs=ln.get('Principled BSDF')
+lnoise=ln.new('ShaderNodeTexNoise');lnoise.inputs['Scale'].default_value=5.5;lnoise.inputs['Detail'].default_value=5;lnoise.inputs['Roughness'].default_value=.68
+lramp=ln.new('ShaderNodeValToRGB');lramp.color_ramp.elements[0].color=(.008,.075,.018,1);lramp.color_ramp.elements[1].color=(.12,.43,.055,1)
+lbump=ln.new('ShaderNodeBump');lbump.inputs['Strength'].default_value=.30;lbump.inputs['Distance'].default_value=.10
+ll.new(lnoise.outputs['Fac'],lramp.inputs['Fac']);ll.new(lramp.outputs['Color'],lbs.inputs['Base Color']);ll.new(lnoise.outputs['Fac'],lbump.inputs['Height']);ll.new(lbump.outputs['Normal'],lbs.inputs['Normal']);lbs.inputs['Roughness'].default_value=.82
+
+def branch_between(name,a,b,r,ma,parent):
+ a=Vector(a);b=Vector(b);d=b-a
+ o=cylinder(name,(a+b)*.5,r,d.length,ma);o.rotation_euler=d.to_track_quat('Z','Y').to_euler();o.parent=parent;return o
+
+# Tapered trunk, branching silhouette and many irregular leaf clusters keep the
+# teaching tree dimensional and photographic rather than a flat icon.
+branch_between('Teaching trunk',(0,0,0),(.02,0,2.32),.22,ttrunk,tree)
+for a,b,r in [((0,0,1.05),(-.72,.01,2.05),.12),((0,0,1.28),(.78,.03,2.18),.12),((0,0,1.62),(-.32,.02,2.72),.10),((0,0,1.78),(.36,.01,2.88),.09)]:
+ branch_between('Teaching branch',a,b,r,ttrunk,tree)
+clusters=[(-.88,0,2.12,.48),(-.55,.03,2.48,.56),(-.18,0,2.25,.52),(.25,.02,2.48,.58),(.70,0,2.22,.50),(.02,.02,2.86,.60),(-.45,-.01,2.98,.45),(.48,.01,2.95,.47),(-.02,-.04,3.30,.42)]
+for i,(x,y,z,s) in enumerate(clusters):
+ c=sphere('Teaching leaf cluster',(x,y,z),(s,.30+s*.17,s*.86),tleaf);c.rotation_euler[1]=math.radians((i%3-1)*9);c.parent=tree
+tree.location=(2.55,.12,-.45);tree.scale=(.92,.92,.92)
 tree_reveal=round((102.87-98.10)*30) if SCENE==19 else 1
 if SCENE not in (19,20):
  tree.scale=(0,0,0);tree.keyframe_insert('scale',frame=1);tree.keyframe_insert('scale',frame=FRAMES)
@@ -218,12 +238,19 @@ else:
  tree.rotation_euler[1]=math.radians(-1.0);tree.keyframe_insert('rotation_euler',frame=FRAMES)
 
 moon=bpy.data.objects.new('MOON_TEACHING_ROOT',None);bpy.context.collection.objects.link(moon)
-moonmat=material('Moon warm glow',(1.0,.72,.16),.28)
-mb=moonmat.node_tree.nodes.get('Principled BSDF')
-if 'Emission' in mb.inputs: mb.inputs['Emission'].default_value=(1.0,.38,.04,1)
-if 'Emission Strength' in mb.inputs: mb.inputs['Emission Strength'].default_value=.8
-m=sphere('Teaching moon',(0,0,0),(1.05,.28,1.05),moonmat);m.parent=moon
-moon.location=(2.45,.15,2.75)
+moonmat=bpy.data.materials.new('Moon cratered surface');moonmat.use_nodes=True
+mn=moonmat.node_tree.nodes;ml=moonmat.node_tree.links;mb=mn.get('Principled BSDF')
+mnoise=mn.new('ShaderNodeTexNoise');mnoise.inputs['Scale'].default_value=7.0;mnoise.inputs['Detail'].default_value=8;mnoise.inputs['Roughness'].default_value=.72
+mramp=mn.new('ShaderNodeValToRGB');mramp.color_ramp.elements[0].color=(.28,.31,.36,1);mramp.color_ramp.elements[1].color=(.92,.88,.72,1)
+mbump=mn.new('ShaderNodeBump');mbump.inputs['Strength'].default_value=.55;mbump.inputs['Distance'].default_value=.16
+ml.new(mnoise.outputs['Fac'],mramp.inputs['Fac']);ml.new(mramp.outputs['Color'],mb.inputs['Base Color']);ml.new(mnoise.outputs['Fac'],mbump.inputs['Height']);ml.new(mbump.outputs['Normal'],mb.inputs['Normal']);mb.inputs['Roughness'].default_value=.78
+if 'Emission' in mb.inputs: mb.inputs['Emission'].default_value=(.24,.20,.11,1)
+if 'Emission Strength' in mb.inputs: mb.inputs['Emission Strength'].default_value=.22
+m=sphere('Teaching moon',(0,0,0),(.90,.38,.90),moonmat);m.parent=moon
+cratermat=material('Moon crater shadows',(.19,.20,.22),.92)
+for x,z,s in [(-.28,.31,.16),(.26,.18,.12),(-.05,-.23,.20),(.36,-.30,.10),(-.42,-.12,.09)]:
+ c=sphere('Moon crater',(x,-.37,z),(s,.035,s*.72),cratermat);c.parent=moon
+moon.location=(2.50,.15,2.82)
 moon_reveal=round((111.31-109.28)*30)
 if SCENE!=21:
  moon.scale=(0,0,0);moon.keyframe_insert('scale',frame=1);moon.keyframe_insert('scale',frame=FRAMES)
